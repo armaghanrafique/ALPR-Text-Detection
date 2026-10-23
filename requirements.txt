@@ -1,0 +1,44 @@
+# ---------------------------------------------------------------------------
+# License Plate Recognition (ALPR) - dependencies
+# ---------------------------------------------------------------------------
+# Tested with Python 3.10 - 3.12 (use 3.11 if unsure).
+#
+# Install (CPU / local testing):
+#     python -m venv venv
+#     # Windows:  venv\Scripts\activate
+#     pip install -r requirements.txt
+#
+# LATER, to move to GPU:
+#     pip uninstall onnxruntime
+#     pip install onnxruntime-gpu
+#   (no code changes needed - set device: "cuda" in config.yaml)
+# ---------------------------------------------------------------------------
+
+# Core ALPR engine: YOLOv9 plate detector + MobileViT plate OCR (ONNX).
+# Pulls in fast-plate-ocr and open-image-models automatically.
+fast-alpr>=0.1.0
+
+# Vehicle detection + tracking (stable car IDs via built-in ByteTrack).
+# Pulls in torch. CPU build installs automatically; for GPU install the CUDA
+# build of torch separately later.
+ultralytics>=8.2.0
+
+# ONNX runtime for the models above (CPU build).
+# >>> For GPU later: uninstall this and install onnxruntime-gpu instead. <<<
+onnxruntime>=1.17.0
+
+# Video / image IO and on-screen overlay.
+opencv-python>=4.9.0
+numpy>=1.24.0
+
+# Precise / fuzzy text matching against a watchlist of known plates.
+rapidfuzz>=3.6.0
+
+# Config file parsing.
+PyYAML>=6.0
+
+# Nice progress bar while processing video files.
+tqdm>=4.66.0
+
+# Web app (localhost UI).
+Flask>=3.0.0

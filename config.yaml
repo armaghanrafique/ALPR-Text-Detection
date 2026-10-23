@@ -1,0 +1,80 @@
+# ===========================================================================
+# ALPR configuration
+# Every value here can also be overridden from the command line, e.g.:
+#     python run.py --input my_video.mp4 --no-show
+# ===========================================================================
+
+# --- Input / output --------------------------------------------------------
+input: "0"                       # video file path, OR "0" for the webcam
+output: "output/annotated.mp4"   # where to save the annotated video
+save_video: true                 # write the annotated video to disk
+show_window: true                # show a live preview window (press q to quit)
+save_csv: "output/detections.csv"  # log every confirmed plate here (set null to disable)
+
+# --- Vehicle detection (cars are detected first, then plates inside them) ---
+# Bigger model = more accurate, slower on CPU:
+#   yolov8n.pt (fastest) < yolov8m.pt (default) < yolov8x.pt / yolo11x.pt (most accurate)
+vehicle_model: "yolov8m.pt"
+vehicle_conf: 0.40               # min confidence to accept a vehicle
+
+# Only finalise / display a plate at or above this OCR confidence (percent).
+# Plates below this are ignored (treated as "not confident enough").
+display_min_confidence: 90
+
+# --- Detection zone + quality gates (read plates only where readable) -------
+# Plates are only READ when they are inside this zone AND big AND sharp enough.
+# This stops far-away blurry plates from being misread and given an id.
+# Start with gates OFF so you SEE every detection first, then tighten them live
+# from the webpage (Tuning panel) until blurry/wrong reads disappear.
+roi:
+  enabled: false
+  # zone as fractions of the frame (0..1). Tune live; watch the yellow box.
+  x1: 0.15
+  y1: 0.45
+  x2: 0.85
+  y2: 0.95
+
+min_sharpness: 0         # reject plate crops blurrier than this (Laplacian var). 0 = off.
+min_plate_width: 0       # ignore plates narrower than this many pixels (too far). 0 = off.
+
+# --- Models (most accurate defaults; reduce for more speed) ----------------
+# Detector options (smaller number = faster, larger = more accurate):
+#   yolo-v9-t-256-license-plate-end2end   (fastest)
+#   yolo-v9-t-384-license-plate-end2end
+#   yolo-v9-t-512-license-plate-end2end
+#   yolo-v9-t-640-license-plate-end2end
+#   yolo-v9-s-608-license-plate-end2end   (most accurate)  <-- default
+detector_model: "yolo-v9-s-608-license-plate-end2end"
+
+# OCR options:
+#   global-plates-mobile-vit-v2-model      (broadest, default)
+#   european-plates-mobile-vit-v2-model
+#   cct-s-v1-global-model
+ocr_model: "global-plates-mobile-vit-v2-model"
+
+device: "cpu"                    # "cpu" now, change to "cuda" after installing onnxruntime-gpu
+
+# --- Confidence thresholds -------------------------------------------------
+min_detection_conf: 0.40         # ignore plate boxes below this score
+min_ocr_conf: 0.50               # ignore OCR readings below this score
+
+# --- Tracker (stabilises the reading across frames) ------------------------
+tracker:
+  iou_threshold: 0.30            # how much boxes must overlap to be the "same" plate
+  max_age: 15                    # keep a lost track alive for this many frames
+  min_hits: 3                    # frames a plate must be seen before it is "confirmed"
+
+# --- De-duplication (one card per unique plate) ----------------------------
+# Merges repeat sightings of the same plate into a single result instead of
+# creating a new card every time the tracker re-assigns an ID.
+dedupe:
+  enabled: true
+  similarity: 88          # merge plates this similar or more. ~88 merges a 1-char
+                          # OCR slip of the SAME car, while keeping different plates
+                          # separate. Raise toward 100 for stricter exclusivity.
+
+# --- Precise text matching against known plates ----------------------------
+matcher:
+  enabled: true
+  watchlist: "watchlist.txt"     # one known plate per line (# = comment)
+  fuzzy_threshold: 85            # 0-100; 100 = exact match only

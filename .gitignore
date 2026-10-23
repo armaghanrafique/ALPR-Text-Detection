@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+env/
+
+# Project outputs
+output/
+*.mp4
+*.avi
+*.mov
+*.mkv
+detections.csv
+
+# Models / caches (downloaded on first run)
+*.onnx
+.cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
