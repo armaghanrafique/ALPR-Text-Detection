@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>License Plate Reader</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="logo">🚗</span>
+      <div>
+        <h1>License Plate Reader</h1>
+        <p class="subtitle">Detects vehicles, then reads each plate (one result per car)</p>
+      </div>
+    </div>
+    <div class="controls">
+      <input id="source" type="text" value="{{ default_source }}"
+             placeholder="video path or 0 for webcam" />
+      <button id="startBtn">▶ Start</button>
+      <button id="stopBtn" class="secondary">■ Stop</button>
+    </div>
+  </header>
+
+  <div class="statusbar">
+    <span class="dot" id="dot"></span>
+    <span id="status">idle</span>
+  </div>
+
+  <main>
+    <section class="video-pane">
+      <div class="video-wrap">
+        <img id="video" src="{{ url_for('video_feed') }}" alt="live video" />
+      </div>
+      <div class="stats">
+        <div class="stat"><span class="k">Frame</span><span class="v" id="frameInfo">0</span></div>
+        <div class="stat"><span class="k">Speed</span><span class="v" id="fpsInfo">0.0 fps</span></div>
+        <div class="stat"><span class="k">Plates</span><span class="v" id="countInfo">0</span></div>
+        <div class="stat"><span class="k">Min conf</span><span class="v" id="thrInfo">—</span></div>
+      </div>
+
+      <details class="tuning" open>
+        <summary>⚙ Tuning &mdash; applies live, no restart</summary>
+
+        <div class="slider-row">
+          <label for="t_conf_slider">Confidence threshold</label>
+          <input id="t_conf_slider" type="range" min="0" max="100" step="1" />
+          <span id="t_conf_val" class="slider-val">—</span>
+        </div>
+
+        <div class="tgrid">
+          <label>Min confidence %<input id="t_conf" type="number" min="0" max="100" /></label>
+          <label>Dedupe similarity %<input id="t_dedupe" type="number" min="0" max="100" /></label>
+          <label>Min sharpness (0=off)<input id="t_sharp" type="number" min="0" /></label>
+          <label>Min plate width px (0=off)<input id="t_width" type="number" min="0" /></label>
+        </div>
+        <label class="chk"><input id="t_roi" type="checkbox" /> Use detection zone (yellow box)</label>
+        <div class="tgrid">
+          <label>Zone left<input id="t_x1" type="number" step="0.01" min="0" max="1" /></label>
+          <label>Zone top<input id="t_y1" type="number" step="0.01" min="0" max="1" /></label>
+          <label>Zone right<input id="t_x2" type="number" step="0.01" min="0" max="1" /></label>
+          <label>Zone bottom<input id="t_y2" type="number" step="0.01" min="0" max="1" /></label>
+        </div>
+        <button id="applyBtn">Apply settings</button>
+        <span id="applyMsg" class="apply-msg"></span>
+      </details>
+    </section>
+
+    <aside class="plates-pane">
+      <div class="pane-head">
+        <h2>Detected Plates</h2>
+        <span id="count" class="badge">0</span>
+      </div>
+      <div id="plates" class="plates"></div>
+      <p id="empty" class="empty">No plates yet.<br />Enter a video path and press <b>Start</b>.</p>
+    </aside>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+# Known / flagged plates - one per line.
+# Lines starting with '#' are ignored. Spaces and case do not matter; the
+# matcher normalises everything (and treats O/0, I/1, etc. as equal).
+#
+# Examples (delete these and add your own):
+ABC1234
+LEA 5678
+KX07 ZYW
